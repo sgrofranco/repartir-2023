@@ -6,7 +6,10 @@ import io.cucumber.java.es.Cuando;
 import io.cucumber.java.es.Entonces;
 import io.cucumber.java.es.Y;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.math.BigDecimal;
@@ -18,22 +21,38 @@ public class TotalNoPuedeSerNegativo extends CucumberSteps {
 
     @Y("el usuario agrega un gasto de $ 100")
     public void elUsuarioAgregaUnGastoDe$100() {
-        var gastoInput = driver.findElement(By.id("gastoInput"));
-        gastoInput.sendKeys("100");
-        gastoInput.sendKeys(Keys.ENTER);
+        elUsuarioAgregaunGastode(100);
+    }
+
+    private void elUsuarioAgregaunGastode(int monto) {
+        WebDriverWait wait = new WebDriverWait(driver, 5);
+
+        //Hacer clic en el botón para agregar gastos
+        WebElement agregarGastosButton = driver.findElement(By.xpath("//*[@id=\"agregarGastoGruposButton-1\"]/button"));
+        agregarGastosButton.click();
+
+        // Esperar a que aparezca la ventana pequeña y el campo de entrada
+        WebElement montoGastoInput = driver.findElement(By.xpath("//*[@id=\"montoGastoNuevoInput\"]"));
+        montoGastoInput.click();
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("document.getElementById('montoGastoNuevoInput').value='"+monto+"';");
+
+        WebElement guardarGastoButton = driver.findElement(By.xpath("//*[@id=\"guardarGastoNuevoButton\"]/button/span[1]"));
+        guardarGastoButton.click();
+        montoGastoInput.sendKeys(Keys.ENTER);
     }
 
     @Entonces("debería visualizar el grupo con total {string}")
-    public void deberiaVisualizarElGrupoConTotalDe$100() {
-        var total = driver.findElement(By.id("total"));
-        assertThat(total.getText()).isEqualTo("$ 100");
+    public void deberiaVisualizarElGrupoConTotalDe$100(String totalEsperado) {
+        WebDriverWait wait = new WebDriverWait(driver, 5);
+        WebElement total = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("td.text-right")));
+        String totalTexto = total.getText().replaceAll("\\s+", " ");
+        assertThat(totalTexto).isEqualTo(totalEsperado.replaceAll("\\s+", " "));
     }
 
     @Y("el usuario agrega un gasto de $ -100")
     public void elUsuarioAgregaUnGastoDe$Menos100() {
-        var gastoInput = driver.findElement(By.id("gastoInput"));
-        gastoInput.sendKeys("-100");
-        gastoInput.sendKeys(Keys.ENTER);
+        elUsuarioAgregaunGastode(-100);
     }
 
     @Entonces("deberia visualizar un mensaje de error indicando que el total no puede ser negativo")
