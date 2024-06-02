@@ -36,3 +36,16 @@ Característica: Crear Grupo para repartir gastos
       Cuando el usuario crea un grupo
       Entonces debería visualiza dentro del listado el grupo creado con total '$  0,00'
 
+  Regla: El total de un grupo no puede ser negativo
+
+    Escenario: Suma positiva de un grupo
+      Dado que el usuario inició Repartir
+      Cuando el usuario crea un grupo
+      Y el usuario agrega un gasto de $ 100
+      Entonces debería visualizar el grupo con total '$ 100,00'
+
+    Escenario: Suma negativa de un grupo
+      Dado que el usuario inició Repartir
+      Cuando el usuario crea un grupo
+      Y el usuario agrega un gasto de $ -100
+      Entonces deberia visualizar un mensaje de error indicando que el total no puede ser negativo
