@@ -2,6 +2,7 @@ package ar.com.grupoesfera.repartir.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.*;
@@ -61,5 +62,14 @@ class GrupoTest {
         grupo.setMiembros(null);
 
         assertThat(grupo.estaFormado()).isFalse();
+    }
+
+    @Test
+    void totalNoPuedeSerNegativo() {
+        Grupo grupo = new Grupo();
+        assertThatThrownBy(() -> grupo.setTotal(new BigDecimal("-1")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("El total no puede ser negativo");
+        assertThat(grupo.getTotal()).isNotEqualTo(new BigDecimal("-1"));
     }
 }
